@@ -1,7 +1,7 @@
 package model;
 
 
-public class ProductComponent {
+public class ComponentPack {
 
     private String sku;
     private int quantity;

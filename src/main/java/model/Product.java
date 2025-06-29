@@ -11,26 +11,13 @@ public class Product {
     @BsonProperty("_id")
     private ObjectId id;
     private String sku;
-    private String name;
+    private String productName;
     private String description;
     private BigDecimal price;
     private String brand;
     private int stock;
-    private int warehouseId;
-    private ProductTypeEnum type;
-    private List<ProductComponent> productComponents;
-
-    public List<ProductComponent> getProductComponents() {
-        return productComponents;
-    }
-
-    public void setProductComponents(List<ProductComponent> productComponents) {
-        this.productComponents = productComponents;
-    }
-
-    public Product() {
-    }
-
+    private String productType;
+    private List<ComponentPack> componentPack;
 
     public ObjectId getId() {
         return id;
@@ -48,12 +35,12 @@ public class Product {
         this.sku = sku;
     }
 
-    public String getName() {
-        return name;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public String getDescription() {
@@ -88,20 +75,20 @@ public class Product {
         this.stock = stock;
     }
 
-    public int getWarehouseId() {
-        return warehouseId;
+    public String getProductType() {
+        return productType;
     }
 
-    public void setWarehouseId(int warehouseId) {
-        this.warehouseId = warehouseId;
+    public void setProductType(String productType) {
+        this.productType = productType;
     }
 
-    public ProductTypeEnum getType() {
-        return type;
+    public List<ComponentPack> getComponentPack() {
+        return componentPack;
     }
 
-    public void setType(ProductTypeEnum type) {
-        this.type = type;
+    public void setComponentPack(List<ComponentPack> componentPack) {
+        this.componentPack = componentPack;
     }
 }
 

@@ -26,12 +26,12 @@ public class ProductService {
 
     public Uni<Product> saveProduct(Product product) {
 
-        return productRepository.findByNameAndBrand(product.getName(), product.getBrand())
+        return productRepository.findByNameAndBrand(product.getProductName(), product.getBrand())
                 .onItem()
                 .ifNotNull()
                 .invoke((e) -> {
-                    log.info("Ya existe un producto con el nombre {} y la marca: {}", e.getName(), e.getBrand());
-                    throw new ProductAlreadyExistsException("Ya existe un producto con el nombre " + e.getName() + " y la marca " + e.getBrand());
+                    log.info("Ya existe un producto con el nombre {} y la marca: {}", e.getProductName(), e.getBrand());
+                    throw new ProductAlreadyExistsException("Ya existe un producto con el nombre " + e.getProductName() + " y la marca " + e.getBrand());
                 })
                 .onItem()
                 .ifNull()
@@ -42,7 +42,7 @@ public class ProductService {
         return productRepository.save(product)
                 .onItem()
                 .transform(insertResult -> {
-                    log.info("Producto guardado con éxito: {}", product.getName());
+                    log.info("Producto guardado con éxito: {}", product.getProductName());
                     return product;
                 })
                 .onFailure()
@@ -61,7 +61,6 @@ public class ProductService {
     }
 
     public Uni<ProductDto> discountStockFlow(ProductDto productDto) {
-
         return productRepository.findBySku(productDto.getSku())
                 .onItem()
                 .ifNull()
@@ -69,10 +68,11 @@ public class ProductService {
                 .onItem()
                 .ifNotNull()
                 .transformToUni(producto -> {
-                    if (ProductTypeEnum.NORMAL.name().equalsIgnoreCase(producto.getType().name())) {
-                        return discountStock(productDto.getQuantityDiscount(), productDto.getSku(), producto.getWarehouseId());
+                    log.info("Descontando al producto con SKU {}", producto.getSku());
+                    if (ProductTypeEnum.NORMAL.name().equalsIgnoreCase(producto.getProductType())) {
+                        return discountStock(productDto.getQuantityDiscount(), productDto.getSku());
                     } else {
-                        List<ProductDto> products = producto.getProductComponents()
+                        List<ProductDto> products = producto.getComponentPack()
                                 .stream().parallel()
                                 .map(s -> {
                                     ProductDto dto = new ProductDto();
@@ -85,18 +85,17 @@ public class ProductService {
                         allProducts.add(productDto);
                         Uni<List<ProductDto>> responses = Multi.createFrom().iterable(allProducts)
                                 .onItem()
-                                .transformToUniAndConcatenate(p -> discountStock(p.getQuantityDiscount(), p.getSku(), p.getWarehouseId()))
+                                .transformToUniAndConcatenate(p -> discountStock(p.getQuantityDiscount(), p.getSku()))
                                 .collect().asList();
 
                         return responses.flatMap(e -> Uni.createFrom().item(e.get(0)));
                     }
                 });
-
-
     }
 
-    private Uni<ProductDto> discountStock(int quantityDiscount, String sku, int warehouseId) {
-        return productRepository.discountStock(sku, quantityDiscount, warehouseId)
+
+    private Uni<ProductDto> discountStock(int quantityDiscount, String sku) {
+        return productRepository.discountStock(sku, quantityDiscount)
                 .onFailure().recoverWithItem(e -> {
                     System.out.println("Fallo SKU: " + sku + " → " + e.getMessage());
                     return null;

@@ -50,7 +50,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .toUni();
     }
 
-    public Uni<ProductDto> discountStock(String sku, int quantityDiscount, int warehouseId) {
+    public Uni<ProductDto> discountStock(String sku, int quantityDiscount) {
         log.info("Eliminando para sku: {}", sku);
         Bson filter = new org.bson.Document("sku", sku);
         Bson update = new org.bson.Document("$inc", new org.bson.Document("stock", -quantityDiscount));
@@ -68,9 +68,17 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public Uni<Product> findBySku(String sku) {
+        log.info("🔍 Buscando en Mongo: '{}'", sku);
         Bson filter = new org.bson.Document("sku", sku);
         return getCollection()
                 .find(filter)
-                .toUni();
+                .toUni()
+                .invoke( product -> {
+                    if (product != null) {
+                        log.info("✅ Producto encontrado: {}", product.getSku());
+                    } else {
+                        log.warn("⚠️ Producto no encontrado para SKU: {}", sku);
+                    }
+                });
     }
 }

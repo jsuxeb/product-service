@@ -12,6 +12,6 @@ public interface ProductRepository {
     Uni<InsertOneResult> save(Product product);
     Uni <Product> findById(Bson id);
     Uni <Product> findByNameAndBrand(String name, String brand);
-    public Uni<ProductDto> discountStock(String sku, int quantityDiscount, int warehouseId);
+    public Uni<ProductDto> discountStock(String sku, int quantityDiscount);
     Uni<Product> findBySku(String sku);
 }

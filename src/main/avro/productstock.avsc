@@ -1,0 +1,35 @@
+{
+  "type": "record",
+  "name": "OrderProductStock",
+  "namespace": "avro.model",
+  "fields": [
+    {
+      "name": "orderId",
+      "type": "long"
+    },
+    {
+      "name": "products",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "Product",
+          "fields": [
+            {
+              "name": "sku",
+              "type": "string"
+            },
+            {
+              "name": "quantity",
+              "type": "int"
+            },
+            {
+              "name": "productType",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
