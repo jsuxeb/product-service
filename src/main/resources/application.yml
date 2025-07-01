@@ -1,20 +1,20 @@
 quarkus:
   mongodb:
     database: products
-    connection-string: mongodb://localhost:27017/products
+    connection-string: ${MONGO_DB:mongodb://192.168.1.48:27017/products}
   http:
-    port: 8084
+    port: 8888
 
 kafka:
   bootstrap:
-    servers: PLAINTEXT://192.168.1.36:19092
+    servers: ${CONFIG_KAFKA_BROKERS:PLAINTEXT://192.168.1.48:19092}
 mp:
   messaging:
     connector:
       smallrye-kafka:
         schema:
           registry:
-            url: http://192.168.1.36:8081
+            url: ${CONFIG_SCHEMA_REGISTRY_URL:http://192.168.1.48:8081}
         auto:
           register:
             schemas: false
